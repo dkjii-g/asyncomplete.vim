@@ -278,13 +278,7 @@ function! s:get_min_chars(source_name) abort
   return g:asyncomplete_min_chars
 endfunction
 
-function! s:on_change() abort
-    if s:should_skip() | return | endif
-
-    if !g:asyncomplete_auto_popup
-        return
-    endif
-
+function! s:complete() abort
     let l:ctx = asyncomplete#context()
     let l:startcol = l:ctx['col']
     let l:last_char = l:ctx['typed'][l:startcol - 2] " col is 1-indexed, but str 0-indexed
@@ -326,6 +320,20 @@ function! s:on_change() abort
 
     call s:trigger(l:ctx)
     call s:update_pum()
+endfunction
+
+function! asyncomplete#show_popup() abort
+	call s:complete()
+endfunction
+
+function! s:on_change() abort
+    if s:should_skip() | return | endif
+
+    if !g:asyncomplete_auto_popup
+        return
+    endif
+		
+		call s:complete()
 endfunction
 
 function! s:trigger(ctx) abort
